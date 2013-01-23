@@ -14,10 +14,11 @@ import time
 import sys
 import os
 
+from StringIO import StringIO
 try:
-    from cStringIO import StringIO
+    from cStringIO import StringIO as cStringIO
 except ImportError:
-    from StringIO import StringIO
+    cStringIO = StringIO
 
 import relativedelta
 import tz
@@ -39,13 +40,16 @@ __all__ = ["parse", "parserinfo"]
 class _timelex(object):
 
     def __init__(self, instream):
-        if isinstance(instream, basestring):
-            instream = StringIO(instream)
-        self.instream = instream
         self.wordchars = ('abcdfeghijklmnopqrstuvwxyz'
                           'ABCDEFGHIJKLMNOPQRSTUVWXYZ_'
                           'ßàáâãäåæçèéêëìíîïğñòóôõöøùúûüışÿ'
                           'ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖØÙÚÛÜİŞ')
+        if isinstance(instream, str):
+            instream = cStringIO(instream)
+        elif isinstance(instream, unicode):
+            instream = StringIO(instream)
+            self.wordchars = self.wordchars.decode('latin1')
+        self.instream = instream
         self.numchars = '0123456789'
         self.whitespace = ' \t\r\n'
         self.charstack = []
