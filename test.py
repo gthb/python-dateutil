@@ -3414,7 +3414,15 @@ class ParserTest(unittest.TestCase):
     def testLongMonth(self):
         self.assertEqual(parse("October", default=self.default),
                          datetime(2003, 10, 25))
-        
+
+    def testYearMonthDefault(self):
+        self.assertEqual(parse("2005-02", default=datetime(2013, 1, 31)),
+                         datetime(2005, 2, 28))
+        self.assertEqual(parse("2004-02", default=datetime(2013, 1, 31)),
+                         datetime(2004, 2, 29))
+        self.assertEqual(parse("2004-04", default=datetime(2013, 1, 31)),
+                         datetime(2004, 4, 30))
+
     def testZeroYear(self):
         self.assertEqual(parse("31-Dec-00", default=self.default),
                          datetime(2000, 12, 31))

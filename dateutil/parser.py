@@ -8,6 +8,7 @@ datetime module.
 __author__ = "Gustavo Niemeyer <gustavo@niemeyer.net>"
 __license__ = "PSF License"
 
+import calendar
 import datetime
 import string
 import time
@@ -311,6 +312,13 @@ class parser(object):
             value = getattr(res, attr)
             if value is not None:
                 repl[attr] = value
+        if repl.get('year') is not None and repl.get('day') is None:
+            daysinmonth = calendar.monthrange(
+                repl['year'],
+                repl.get('month', default.month)
+            )[1]
+            if default.day > daysinmonth:
+                repl['day'] = daysinmonth
         ret = default.replace(**repl)
         if res.weekday is not None and not res.day:
             ret = ret+relativedelta.relativedelta(weekday=res.weekday)
